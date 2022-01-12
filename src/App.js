@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import './App.css';
+
+toast.configure();
 
 const App = () => {
   const [occandstate, setOccandstate] = useState({});
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [occupation, setOccupation] = useState('Choose Occupation');
-  const [state, setState] = useState('Choose State');
+  const [occupation, setOccupation] = useState('Select Occupation');
+  const [state, setState] = useState('Select State');
 
   useEffect(() => {
     fetch('https://frontend-take-home.fetchrewards.com/form')
@@ -15,9 +19,16 @@ const App = () => {
       .then(data => setOccandstate(data));
   }, []);
   
+  const notify = () => {
+    toast('Form successfully submitted!', {
+      position: toast.POSITION.BOTTOM_CENTER,
+      theme: 'dark'
+    })
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (occupation === 'Choose Occupation' || state === 'Choose State') {
+    if (occupation === 'Select Occupation' || state === 'Select State') {
       alert('Choose a proper occupation and / or state');
     } else {
       const formInfo = { name, email, password, occupation, state };
@@ -26,13 +37,14 @@ const App = () => {
         method: 'POST',
         headers: { 'Content-Type' : 'application/json' },
         body: JSON.stringify(formInfo)
-      }).then(() => {
-        alert('Your form has been submitted!')
-      });
+      })
       setName('');
       setEmail('');
       setPassword('');
+      setOccupation('Select Occupation');
+      setState('Select State');
       e.target.reset();
+      notify();
     }
   }
   return (
